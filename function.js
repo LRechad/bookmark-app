@@ -1,17 +1,13 @@
-const renderBookmark = () => {
-    // Get the value from inputs
-    let siteInput = inputSiteName.value;
-    let urlInput = inputSiteUrl.value;
-
+const renderBookmark = (siteName, siteUrl) => {
     // Create the DOM elements
     let bookmark = document.createElement('li');
     let p = document.createElement('p');
     let visitLink = document.createElement('a');
     let deleteLink = document.createElement('a');
 
-    // Change text value
-    p.textContent = siteInput;
-    visitLink.href = urlInput;
+    // Change text & content value
+    p.textContent = siteName;
+    visitLink.href = siteUrl;
     visitLink.textContent = 'Visit';
     deleteLink.textContent = 'Delete';
 
@@ -39,10 +35,29 @@ const saveBookmark = (siteName, siteUrl) => {
     }
 
     bookmarks.push(bookmark);
-    localStorage.setItem('bookmarks', JSON.stringify(bookmark));
+    updateBookmarksObject();
 }
 
 const deleteBookmark = function () {
+    let li = this.parentNode;
+    let p = Array.from(li.getElementsByTagName('p'));
+    let siteName = p[0].textContent;
+
+    let item = bookmarks.find((bookmark) => bookmark.name === siteName);
+    bookmarks.splice(bookmarks.indexOf(item), 1)
+
+    updateBookmarksObject();
     list.removeChild(this.parentNode);
 }
 
+const firstRendering = () => {
+    if (bookmarks.length === null) return;
+
+    bookmarks.forEach(bookmark => {
+        renderBookmark(bookmark.name, bookmark.url);
+    });
+}
+
+const updateBookmarksObject = () => {
+    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+}
